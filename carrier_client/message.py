@@ -1,4 +1,5 @@
 import json
+from .exception import MessageManagerException, ExceptionMessage
 
 class Message():
 
@@ -9,6 +10,15 @@ class Message():
         return self._message    
 
 class OutgoingMessage(Message):
+
+    def validate(self, message):
+        try:
+            json = json.loads(message)
+        except ValueError:
+            raise MessageManagerException(
+                ExceptionMessage.get_incorrect_json()
+            )
+            # contains fields
 
     def __init__(self, topic, message):
         # TODO validate message format

@@ -1,12 +1,12 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
-setup(name='carrier',
-      version='0.1',
-      description='Carrier',
-      url='https://github.com/EduScaled/carrier-package',
+setup(name='carrier_client',
+      version='0.2',
+      description='Carrier client',
+      packages=find_packages(),
+      url='https://github.com/EduScaled/carrier-client',
       author='Nick Lubyanov',
       author_email='lubyanov@gmail.com',
       license='MIT',
-      packages=['carrier'],
       install_requires=['requests'],
       zip_safe=False)

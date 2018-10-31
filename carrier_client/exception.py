@@ -29,3 +29,7 @@ class ExceptionMessage():
     @staticmethod
     def get_incorrect_handler(handler):
         return "Incorrect handler, expects for <class 'function'> instance, but {} found.".format(type(message))
+
+    @staticmethod
+    def get_incorrect_json():
+        return "Given message isn't a valid JSON"
