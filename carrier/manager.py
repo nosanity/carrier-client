@@ -1,5 +1,6 @@
 import requests
-from .message import Message
+from .message import OutgoingMessage
+from .exception import MessageManagerException, ExceptionMessage
 
 class EventHandler():
 
@@ -13,9 +14,6 @@ class EventHandler():
     def handle(self, message):
         self._handler(message)
 
-class MessageManagerException(Exception):
-    pass
-
 class MessageManager():
 
     def __init__(self, topics, host, port, protocol="http", auth=""):
@@ -25,54 +23,65 @@ class MessageManager():
         self._port = port
         self._protocol = protocol
         
+        self.validate_init_parameters()
+
         self._url = "{}://{}:{}".format(protocol, host, port)
+        self._produce_url = "{}/produce/".format(self._url)
+
         self._headers = {
             'Authorization': self._auth,
             'Content-Type': 'application/json'
         }
         self._event_handlers = []
         
+    def validate_init_parameters(self):
+        # TODO validate topics, port
+        if self._protocol not in ['http', 'https']:
+            raise MessageManagerException(
+                ExceptionMessage.get_incorrect_protocol()
+            )            
+
+    def validate_handler_function(self, funcs):
+        for func in funcs:
+            if not callable(func):
+                raise MessageManagerException(
+                    ExceptionMessage.get_incorrect_handler(func)
+                )
+
+    def validate_outgoing_message(self, message):
+        if not message:
+            raise MessageManagerException(
+                ExceptionMessage.get_message_not_found()
+            )
+        if not isinstance(message, OutgoingMessage):
+            raise MessageManagerException(
+                ExceptionMessage.get_incorrect_message_class(message)
+            )
+        if message.get_topic() not in self._topics:
+            raise MessageManagerException(
+                ExceptionMessage.get_incorrect_topic(message.get_topic(), self._topics)
+            )            
+
     def register_event_handler(self, should_handle, handler):
+        self.validate_handler_function([should_handle, handler])
         self._event_handlers.append(
             EventHandler(should_handle, handler)
         )
 
     def send_one(self, message):
-        if not message:
-            raise MessageManagerException("No message to send")
-        if not isinstance(message, Message):
-            raise MessageManagerException(
-                "Expects for <class 'Message'> instance, but {} found".format(type(message))
-            )
+        self.validate_outgoing_message()
         payload = {
             'topic': message.get_topic(),
             'message': message.get_message()
         }
-        try:
-            url = "{}/produce/".format(self._url)
-            r = requests.post(url, headers = self._headers, json=payload)
-            if r.status_code == 200:
-                if r.json() and r.json()['status'] == 'success':
-                    # TODO
-                    return {
-                        'status': 'success',
-                        'message': 'message was sent successfully'
-                    }
-                else:
-                    # TODO
-                    raise Exception("TODO")
-            else:
-                error = "{}; status={}; body={}".format(
-                    "Error happened during message sending", r.status_code, r.text
-                )
-                raise MessageManagerException(error)
-        except requests.RequestException as err:
-            raise MessageManagerException(err)
-
-    def send_many(self, messages=[]):
-        pass
+        r = requests.post(self._produce_url, headers = self._headers, json=payload)
+        if r.status_code != 200:
+            raise MessageManagerException(
+                ExceptionMessage.get_carrier_exception(r)
+            )
 
     def handle_message(self, message):
+        # Trust to user that message is instance of IncomingMessage
         for event_handler in self._event_handlers:
             if event_handler.should_handle(message):
                 event_handler.handle(message)

@@ -11,6 +11,7 @@ class Message():
 class OutgoingMessage(Message):
 
     def __init__(self, topic, message):
+        # TODO validate message format
         self._topic = topic
         self._message = message
 
@@ -29,4 +30,5 @@ class IncomingMessage(Message):
         return instance
 
     def get_message(self):
+        # TODO check that it's json and it's in format
         return json.loads(self._value)
