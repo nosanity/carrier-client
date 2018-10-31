@@ -8,5 +8,5 @@ setup(name='carrier_client',
       author='Nick Lubyanov',
       author_email='lubyanov@gmail.com',
       license='MIT',
-      install_requires=['requests'],
+      install_requires=['requests', 'jsonschema', 'strict-rfc3339'],
       zip_safe=False)

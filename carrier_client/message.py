@@ -1,4 +1,5 @@
 import json
+from .utils import validate_payload
 from .exception import MessageManagerException, ExceptionMessage
 
 class Message():
@@ -6,24 +7,26 @@ class Message():
     def get_topic(self):
         return self._topic
 
-    def get_message(self):
-        return self._message    
+    def get_payload(self):
+        return self._payload    
 
 class OutgoingMessage(Message):
 
-    def validate(self, message):
-        try:
-            json = json.loads(message)
-        except ValueError:
+    def validate(self, topic, payload):
+        if type(topic) != str:
             raise MessageManagerException(
-                ExceptionMessage.get_incorrect_json()
-            )
-            # contains fields
+                ExceptionMessage.get_incorrect_topic_type(topic)
+            )       
+        if type(payload) != dict:
+            raise MessageManagerException(
+                ExceptionMessage.get_incorrect_payload_type(payload)
+            )  
+        validate_payload(payload)          
 
-    def __init__(self, topic, message):
-        # TODO validate message format
+    def __init__(self, topic, payload):
+        self.validate(topic, payload)
         self._topic = topic
-        self._message = message
+        self._payload = payload
 
 class IncomingMessage(Message):
 
@@ -39,6 +42,14 @@ class IncomingMessage(Message):
         instance._timestamp = data['timestamp']
         return instance
 
-    def get_message(self):
-        # TODO check that it's json and it's in format
+    def validate(self):
+        try:
+            payload = json.loads(self._value)
+        except ValueError:
+            raise MessageManagerException(
+                ExceptionMessage.get_incorrect_json()
+            )
+
+    def get_payload(self):
+        self.validate()
         return json.loads(self._value)

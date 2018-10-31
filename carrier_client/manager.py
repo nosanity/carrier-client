@@ -70,11 +70,11 @@ class MessageManager():
 
     def send_one(self, message):
         self.validate_outgoing_message()
-        payload = {
+        data = {
             'topic': message.get_topic(),
-            'message': message.get_message()
+            'payload': message.get_payload()
         }
-        r = requests.post(self._produce_url, headers = self._headers, json=payload)
+        r = requests.post(self._produce_url, headers = self._headers, json=data)
         if r.status_code != 200:
             raise MessageManagerException(
                 ExceptionMessage.get_carrier_exception(r)

@@ -1,3 +1,4 @@
+.vscode
 .eggs
 *.egg-info
 venv

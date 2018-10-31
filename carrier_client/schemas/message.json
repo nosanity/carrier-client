@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Message payload",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "object"
+        },
+        "action": {
+            "type": "string",
+            "pattern": "(create|update|delete)"
+        },
+        "type": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "source": {
+            "type": "string"
+        },
+        "version": {
+            "type": "integer"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["id", "action", "type", "title", "timestamp", "source", "version"]
+}

@@ -23,12 +23,20 @@ class ExceptionMessage():
         )
 
     @staticmethod
+    def get_incorrect_topic_type(topic):
+        return "Incorrect topic type, expects for <class 'str'> instance, but {} found.".format(type(topic))
+
+    @staticmethod
     def get_carrier_exception(response):
         return "Carrier exception HTTP [{}], {}".format(response.status_code, response.text)
 
     @staticmethod
     def get_incorrect_handler(handler):
-        return "Incorrect handler, expects for <class 'function'> instance, but {} found.".format(type(message))
+        return "Incorrect handler, expects for <class 'function'> instance, but {} found.".format(type(handler))
+
+    @staticmethod
+    def get_incorrect_payload_type(payload):
+        return "Incorrect payload type, expects for <class 'dict'> instance, but {} found.".format(type(payload))
 
     @staticmethod
     def get_incorrect_json():
