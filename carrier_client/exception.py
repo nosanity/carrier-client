@@ -17,9 +17,9 @@ class ExceptionMessage():
 
     @staticmethod
     def get_incorrect_topic(topic_to_send, available_topics):
-        return "Passed topic {} to send, but only [{}] topics supported.".format(
+        return "Passed topic '{}' to send, but only [{}] topics supported.".format(
             topic_to_send,
-            ",".join(available_topics)
+            ",".join([ "'{}'".format(topic) for topic in available_topics ])
         )
 
     @staticmethod

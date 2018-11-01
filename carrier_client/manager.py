@@ -69,7 +69,7 @@ class MessageManager():
         )
 
     def send_one(self, message):
-        self.validate_outgoing_message()
+        self.validate_outgoing_message(message)
         data = {
             'topic': message.get_topic(),
             'payload': message.get_payload()

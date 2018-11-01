@@ -1,3 +1,4 @@
+import ast
 import json
 from .utils import validate_payload
 from .exception import MessageManagerException, ExceptionMessage
@@ -42,14 +43,22 @@ class IncomingMessage(Message):
         instance._timestamp = data['timestamp']
         return instance
 
-    def validate(self):
+    def try_to_parse(self):
+        is_json = False
         try:
             payload = json.loads(self._value)
+            is_json = True
         except ValueError:
+            try:
+                payload = ast.literal_eval(self._value)
+                is_json = isinstance(payload, dict)
+            except (ValueError, SyntaxError, TypeError):
+                pass
+        if not is_json:
             raise MessageManagerException(
                 ExceptionMessage.get_incorrect_json()
             )
+        return payload
 
     def get_payload(self):
-        self.validate()
-        return json.loads(self._value)
+        return self.try_to_parse()
