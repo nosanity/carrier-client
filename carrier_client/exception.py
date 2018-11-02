@@ -41,3 +41,7 @@ class ExceptionMessage():
     @staticmethod
     def get_incorrect_json():
         return "Given message isn't a valid JSON"
+
+    @staticmethod
+    def get_incorrect_port(port):
+        return "Incorrect port, expects port in ragne 1-65535 , but {} found.".format(port)        

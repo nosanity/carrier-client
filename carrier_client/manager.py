@@ -35,10 +35,13 @@ class MessageManager():
         self._event_handlers = []
         
     def validate_init_parameters(self):
-        # TODO validate topics, port
+        if self._port < 1 or self._port > 65534:
+            raise MessageManagerException(
+                ExceptionMessage.get_incorrect_port(self._port)
+            )                 
         if self._protocol not in ['http', 'https']:
             raise MessageManagerException(
-                ExceptionMessage.get_incorrect_protocol()
+                ExceptionMessage.get_incorrect_protocol(self._protocol)
             )            
 
     def validate_handler_function(self, funcs):

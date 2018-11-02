@@ -24,7 +24,10 @@
             "type": "string"
         },
         "version": {
-            "type": "integer"
+            "anyOf": [
+                {"type":"null"},
+                {"type":"integer"}
+            ]
         }
     },
     "additionalProperties": false,
