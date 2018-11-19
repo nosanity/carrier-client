@@ -33,6 +33,7 @@ class IncomingMessage(Message):
 
     @classmethod
     def create_from_bytes(cls, bytes):
+        # TODO implement validation (JSON, fields, payload format)
         data = json.loads(bytes.decode("utf-8"))
         instance = cls()
         instance._topic = data['topic']
