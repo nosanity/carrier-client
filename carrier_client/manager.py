@@ -16,7 +16,7 @@ class EventHandler():
 
 class MessageManager():
 
-    def __init__(self, topics, host, port, protocol="http", auth=""):
+    def __init__(self, topics, host, port, protocol="http", auth="", timeout=None):
         self._topics = topics
         self._auth = auth
         self._host = host
@@ -33,6 +33,7 @@ class MessageManager():
             'Content-Type': 'application/json'
         }
         self._event_handlers = []
+        self.timeout = timeout
         
     def validate_init_parameters(self):
         if self._port < 1 or self._port > 65534:
@@ -71,13 +72,14 @@ class MessageManager():
             EventHandler(should_handle, handler)
         )
 
-    def send_one(self, message):
+    def send_one(self, message, timeout=None):
+        timeout = timeout or self.timeout
         self.validate_outgoing_message(message)
         data = {
             'topic': message.get_topic(),
             'payload': message.get_payload()
         }
-        r = requests.post(self._produce_url, headers = self._headers, json=data)
+        r = requests.post(self._produce_url, headers = self._headers, json=data, timeout=timeout)
         if r.status_code != 200:
             raise MessageManagerException(
                 ExceptionMessage.get_carrier_exception(r)
@@ -88,3 +90,16 @@ class MessageManager():
         for event_handler in self._event_handlers:
             if event_handler.should_handle(message):
                 event_handler.handle(message)
+
+
+def check_kafka_status(host, port, protocol="http", auth="", timeout=None):
+    url = "{}://{}:{}/api/check/".format(protocol, host, port)
+    headers = {
+        'Authorization': auth,
+        'Content-Type': 'application/json'
+    }
+    try:
+        resp = requests.post(url, headers=headers, timeout=timeout)
+        return resp.status_code
+    except requests.RequestException:
+        return
