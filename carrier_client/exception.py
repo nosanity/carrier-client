@@ -9,7 +9,7 @@ class ExceptionMessage():
 
     @staticmethod
     def get_incorrect_protocol(protocol):
-        return "Incorrect protocol, expects for 'http' or 'https', but {} found.".format(protocol)
+        return "Incorrect protocol, expects for 'http' or 'https' or 'tcp', but {} found.".format(protocol)
 
     @staticmethod
     def get_incorrect_message_class(message):
