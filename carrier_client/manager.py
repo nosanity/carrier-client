@@ -39,7 +39,7 @@ class MessageManager():
             raise MessageManagerException(
                 ExceptionMessage.get_incorrect_port(self._port)
             )                 
-        if self._protocol not in ['http', 'https']:
+        if self._protocol not in ['http', 'https', 'tcp']:
             raise MessageManagerException(
                 ExceptionMessage.get_incorrect_protocol(self._protocol)
             )            
